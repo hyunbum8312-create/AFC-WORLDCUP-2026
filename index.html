@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>(AFC) 2026 월드컵 우승팀을 맞춰라 !! - V7</title>
+<title>(AFC) 2026 월드컵 우승팀을 맞춰라 !! - V8</title>
 <style>
 :root{--bg:#07111f;--card:#0e1b2f;--card2:#12233d;--line:#263d5f;--text:#eef5ff;--muted:#9fb2cb;--gold:#ffd166;--green:#39d98a;--red:#ff6b6b;--blue:#67b7ff;--purple:#c79bff}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(135deg,#05101f,#10264b 45%,#06101d);color:var(--text)}
@@ -29,7 +29,7 @@ table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}th,
 </head>
 <body>
 <header>
-  <h1>(AFC) 2026 월드컵 우승팀을 맞춰라 !! <span style="font-size:14px;color:#ffd166">V7</span></h1>
+  <h1>(AFC) 2026 월드컵 우승팀을 맞춰라 !! <span style="font-size:14px;color:#ffd166">V8</span></h1>
   <div class="sub">48개국 · 12개 조 · 조별 상위 2팀 + 3위 중 상위 8팀 32강 진출 · V6 수정본: 2026.06.22</div>
   <div class="prizes"><span class="badge gold">우승팀: 신세계상품권 10만원</span><span class="badge">준우승팀: 점심식사권 7만원</span><span class="badge">3위팀: 와인 5만원</span></div>
 </header>
@@ -42,12 +42,12 @@ table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}th,
 </section>
 
 <section id="projected32" class="tab">
-  <h2>예상 32강 대진표</h2>
+  <h2>32강 대진표(확정)</h2>
   <div class="note">현재 조별순위와 우승확률을 합산한 운영용 예상 대진입니다. 선택팀은 노란 테두리와 참석자 이름으로 구분 표시됩니다.</div>
   <div id="projected32Box"></div>
 </section>
 <section id="remainingOutlook" class="tab">
-  <h2>팀별 잔여 경기 예상</h2>
+  <h2>32강 결과 예상</h2>
   <div class="note">참석자 선택팀 기준으로 조별리그 남은 경기의 판세, 예상 승리확률, 주요 이슈와 확인 링크를 정리했습니다.</div>
   <div id="remainingOutlookBox"></div>
 </section>
@@ -61,7 +61,7 @@ table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}th,
   <div class="note">선택자가 있는 국가는 노란 테두리로 표시되고, 이름이 함께 표시됩니다.</div>
   <div id="groupCards" class="grid"></div>
 </section>
-<section id="participants" class="tab"><h2>참가자 / 선택팀 현황</h2><div class="summary" id="summary"></div><div class="card"><table id="participantTable"></table></div></section>
+<section id="participants" class="tab"><h2>참가자 생존현황</h2><div class="summary" id="summary"></div><div class="card"><table id="participantTable"></table></div></section>
 <section id="schedule" class="tab"><h2>참석자별 선택팀 일정 조회</h2><div class="controls"><select id="personSelect"></select><select id="teamSelect"></select></div><div id="scheduleBox" class="grid"></div></section>
 <section id="results" class="tab"><h2>조별리그 결과 입력 / 자동 순위</h2><div class="note">경기 스코어를 입력하면 승점, 골득실, 다득점 기준으로 조 순위가 자동 계산됩니다. 1·2위와 3위 상위 8팀은 생존 처리됩니다.</div><div class="controls"><button class="action" onclick="resetScores()">스코어 초기화</button><button class="action" onclick="saveScores()">현재 스코어 저장</button></div><div id="resultArea"></div></section>
 <section id="survivors" class="tab"><h2>생존자 현황</h2><div id="survivorSummary" class="summary"></div><div class="card"><table id="survivorTable"></table></div></section>
@@ -74,24 +74,47 @@ const groups={A:["Mexico","South Africa","South Korea","Czechia"],B:["Canada","S
 const participants=[
 {name:"단장",team:"Portugal"},{name:"파트장",team:"South Korea"},{name:"고지성",team:"Argentina"},{name:"민슬기",team:"England"},{name:"장지수",team:"Germany"},{name:"안정연",team:"France"},{name:"김민지",team:"Spain"},{name:"박용선",team:"Brazil"},{name:"김현서",team:"Spain"},{name:"한창진",team:"Netherlands"},{name:"김경화",team:"Spain"},{name:"방성인",team:"England"},{name:"이정진",team:"France"}
 ];
-const confirmedQualifiedTeams=[]; // V7: 실제 32강 진출 확정팀만 추후 입력. 참가자는 탈락 확정 전까지 생존 처리
+
+const knockoutR32=[
+ {date:"6/28",home:"South Africa",away:"Canada",score:"0-1",winner:"Canada",status:"종료"},
+ {date:"6/29",home:"Brazil",away:"Japan",score:"예정",winner:null,status:"예정"},
+ {date:"6/29",home:"Germany",away:"Paraguay",score:"예정",winner:null,status:"예정"},
+ {date:"6/29",home:"Netherlands",away:"Morocco",score:"예정",winner:null,status:"예정"},
+ {date:"6/30",home:"Ivory Coast",away:"Norway",score:"예정",winner:null,status:"예정"},
+ {date:"6/30",home:"France",away:"Sweden",score:"예정",winner:null,status:"예정"},
+ {date:"6/30",home:"Mexico",away:"Ecuador",score:"예정",winner:null,status:"예정"},
+ {date:"7/1",home:"England",away:"DR Congo",score:"예정",winner:null,status:"예정"},
+ {date:"7/1",home:"Belgium",away:"Senegal",score:"예정",winner:null,status:"예정"},
+ {date:"7/1",home:"United States",away:"Bosnia and Herzegovina",score:"예정",winner:null,status:"예정"},
+ {date:"7/2",home:"Spain",away:"Austria",score:"예정",winner:null,status:"예정"},
+ {date:"7/2",home:"Portugal",away:"Croatia",score:"예정",winner:null,status:"예정"},
+ {date:"7/2",home:"Switzerland",away:"Algeria",score:"예정",winner:null,status:"예정"},
+ {date:"7/3",home:"Australia",away:"Egypt",score:"예정",winner:null,status:"예정"},
+ {date:"7/3",home:"Argentina",away:"Cape Verde",score:"예정",winner:null,status:"예정"},
+ {date:"7/3",home:"Colombia",away:"Ghana",score:"예정",winner:null,status:"예정"}
+];
+const officialRound32Teams=[...new Set(knockoutR32.flatMap(m=>[m.home,m.away]))];
+const eliminatedTeams=["South Korea","South Africa"];
+function isAliveTeam(team){return officialRound32Teams.includes(team) && !eliminatedTeams.includes(team)}
+function knockoutMatchFor(team){return knockoutR32.find(m=>m.home===team||m.away===team)}
+function opponentInKnockout(team){const m=knockoutMatchFor(team); if(!m) return null; return m.home===team?m.away:m.home}
+
+const confirmedQualifiedTeams=officialRound32Teams; // V8: 32강 확정팀 반영
 const winnerOdds={
-  "France":{odds:"시장 1위권",prob:"약 19.0%",prev:"18.2",delta:"+0.8",note:"세네갈전 3-1 승리 후 최상위권 유지"},
-  "Spain":{odds:"상승",prob:"약 15.8%",prev:"14.8",delta:"+1.0",note:"사우디 4-0 완승으로 반등"},
-  "England":{odds:"상승",prob:"약 12.8%",prev:"12.0",delta:"+0.8",note:"크로아티아 4-2 승리, 방성인 반영"},
-  "Argentina":{odds:"상승",prob:"약 12.4%",prev:"8.8",delta:"+3.6",note:"알제리 3-0 완승 효과 지속"},
-  "Portugal":{odds:"상위권",prob:"약 11.4%",prev:"12.5",delta:"-1.1",note:"콩고 DR 1-1 무승부로 소폭 하락"},
-  "Brazil":{odds:"상위권",prob:"약 9.2%",prev:"8.6",delta:"+0.6",note:"아이티 3-0 승리로 회복"},
-  "Germany":{odds:"상승",prob:"약 8.4%",prev:"7.7",delta:"+0.7",note:"2연승, 조 1위권"},
-  "Netherlands":{odds:"중상위권",prob:"약 5.0%",prev:"4.6",delta:"+0.4",note:"스웨덴 5-1 승리로 상승"},
-  "South Korea":{odds:"하락",prob:"약 2.1%",prev:"2.4",delta:"-0.3",note:"멕시코전 0-1 패배로 조 2위 경쟁"}
+  "France":{odds:"우승권",prob:"약 18.8%",prev:"19.0",delta:"-0.2",note:"32강 스웨덴전 우세 예상"},
+  "Spain":{odds:"우승권",prob:"약 16.6%",prev:"15.8",delta:"+0.8",note:"사우디전 대승 후 안정권, 오스트리아전 우세"},
+  "England":{odds:"상승",prob:"약 13.6%",prev:"12.8",delta:"+0.8",note:"DR콩고전 우세, 민슬기·방성인 동반 생존"},
+  "Argentina":{odds:"상승",prob:"약 13.2%",prev:"12.4",delta:"+0.8",note:"카보베르데전 강한 우세 예상"},
+  "Portugal":{odds:"상위권",prob:"약 10.8%",prev:"11.4",delta:"-0.6",note:"크로아티아전 난도 높음"},
+  "Brazil":{odds:"상위권",prob:"약 9.8%",prev:"9.2",delta:"+0.6",note:"일본전 우세이나 방심 금물"},
+  "Germany":{odds:"상승",prob:"약 8.8%",prev:"8.4",delta:"+0.4",note:"파라과이전 우세, 8강권 기대"},
+  "Netherlands":{odds:"중상위권",prob:"약 5.4%",prev:"5.0",delta:"+0.4",note:"모로코전 경계 필요"}
 };
 const newsLinks=[
-  {title:"CBS Sports: 2026 월드컵 조별 순위·결과",url:"https://www.cbssports.com/soccer/news/world-cup-group-standings-table-results/"},
-  {title:"FIFA 공식 경기 일정·결과",url:"https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures"},
-  {title:"Reuters: Cape Verde, Uruguay와 2-2 무승부",url:"https://www.reuters.com/sports/soccer/brave-cape-verde-hold-uruguay-2-2-draw-world-cup-2026-06-22/"},
-  {title:"Guardian: New Zealand vs Egypt 라이브",url:"https://www.theguardian.com/football/live/2026/jun/22/fifa-world-cup-2026-live-new-zealand-v-egypt-updates-nzl-vs-egy-group-g-match-score-latest"},
-  {title:"Reuters: Norway vs Senegal 프리뷰",url:"https://www.reuters.com/sports/soccer/solbakken-wary-senegal-threat-norway-look-build-flying-start-2026-06-22/"}
+  {title:"FIFA 공식 2026 월드컵 일정·결과",url:"https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures"},
+  {title:"ESPN: 2026 World Cup fixtures and results",url:"https://www.espn.com/soccer/story/_/id/48939282/2026-fifa-world-cup-fixtures-results-match-schedule-group-stage-knockout-rounds-bracket"},
+  {title:"CBS Sports: World Cup standings and results",url:"https://www.cbssports.com/soccer/news/world-cup-group-standings-table-results/"},
+  {title:"FIFA: Knockout stage bracket",url:"https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures"}
 ];
 const tournamentTimeline=[
   {stage:"조별예선",date:"2026.06.11~06.27",desc:"48개국·12개 조"},
@@ -119,31 +142,62 @@ const v7Results={
 schedule.forEach(m=>{if(v7Results[m.no]){m.hg=v7Results[m.no][0];m.ag=v7Results[m.no][1];}});
 function K(t){return ko[t]||t}function pickers(team){return participants.filter(p=>p.team===team).map(p=>p.name)}function groupOf(team){return Object.keys(groups).find(g=>groups[g].includes(team))}
 function pctSortValue(v){if(!v)return 0;let m=(v.prob||'').match(/[0-9.]+/);return m?+m[0]:0}
+function knockoutSideHtml(team,meta=''){
+  const ps=pickers(team); const out=eliminatedTeams.includes(team); const alive=isAliveTeam(team);
+  const pr=r32WinProb(team);
+  const winTxt=pr ? `승리확률 ${pr.win}%` : '';
+  const pillClass=pr ? (pr.win>=60?'safe':pr.win>=45?'watch':'danger') : '';
+  return `<div class="side ${ps.length?'pickedSide':''}" style="${out?'opacity:.58;border-color:var(--red)':''}"><span><b>${K(team)}</b>${ps.length?` <span class=names>${ps.join(', ')}</span>`:''}<div class=teamMini>${meta}${out?'<br><span class=out>탈락</span>':alive?'<br><span class=alive>생존</span>':''}</div></span><span class="pill ${pillClass}">${winTxt}</span></div>`;
+}
+function renderOfficialR32Grid(compact=false){
+  return `<div class=projGrid>${knockoutR32.map((m,i)=>`<div class=matchCard><h3>${i+1}경기 · ${m.date} <span class=pill>${m.status}</span></h3>${knockoutSideHtml(m.home,m.winner===m.home?'승리':m.score==='예정'?'32강':'패배')}<div class=tiny style="text-align:center">${m.score==='예정'?'vs':m.score}</div>${knockoutSideHtml(m.away,m.winner===m.away?'승리':m.score==='예정'?'32강':'패배')}</div>`).join('')}</div>`;
+}
+function r32WinProb(team){
+  const opp=opponentInKnockout(team); if(!opp) return null;
+  const a=teamStrength(team), b=teamStrength(opp); let win=Math.round((a/(a+b))*100); let lose=100-win;
+  return {opp,win,lose};
+}
+
 function renderOverview(){
-  const unique=[...new Set(participants.map(p=>p.team))];
-  const oddsRows=unique.sort((a,b)=>pctSortValue(winnerOdds[b])-pctSortValue(winnerOdds[a])).map(t=>{let o=winnerOdds[t]||{odds:'확인 필요',prob:'-',delta:'0',note:'-'};let dc=(o.delta||'0').startsWith('+')?'deltaPlus':((o.delta||'0').startsWith('-')?'deltaMinus':'deltaFlat');return `<tr><td>${K(t)}<div class=korea>${pickers(t).join(', ')}</div></td><td>${o.odds}</td><td>${o.prob}</td><td class="${dc}">${o.delta||'0'}</td><td><span class=pill>${o.note}</span></td></tr>`}).join('');
+  const unique=[...new Set(participants.map(p=>p.team))].filter(t=>winnerOdds[t] && isAliveTeam(t));
+  const oddsRows=unique.sort((a,b)=>pctSortValue(winnerOdds[b])-pctSortValue(winnerOdds[a])).map(t=>{let o=winnerOdds[t];let dc=(o.delta||'0').startsWith('+')?'deltaPlus':((o.delta||'0').startsWith('-')?'deltaMinus':'deltaFlat');return `<tr><td>${K(t)}<div class=korea>${pickers(t).join(', ')}</div></td><td>${o.odds}</td><td>${o.prob}</td><td class="${dc}">${o.delta||'0'}</td><td><span class=pill>${o.note}</span></td></tr>`}).join('');
+  const eliminatedPickers=participants.filter(p=>!isAliveTeam(p.team)).map(p=>`${p.name}(${K(p.team)})`).join(', ')||'-';
   const timeline=tournamentTimeline.map((x,i)=>`<div class=timebox><b>${x.stage}</b><div>${x.date}</div><div class=tiny>${x.desc}</div></div>${i<tournamentTimeline.length-1?'<span class=stageArrow>→</span>':''}`).join('');
   const links=newsLinks.map(l=>`<li><a href="${l.url}" target="_blank" rel="noopener">${l.title}</a></li>`).join('');
-  const dashboardOddsCard=`<div class="card oddsWrap" style="margin-top:14px"><h3>우승확률 요약</h3><table class=oddsTable><tr><th>선택팀 / 선택자</th><th>현재 확률</th><th>조정</th><th>메모</th></tr>${oddsRows.replaceAll("<td>시장 1위권</td>","").replaceAll("<td>상위권</td>","").replaceAll("<td>시장 3위권</td>","").replaceAll("<td>상승</td>","").replaceAll("<td>중상위권</td>","")}</table><div class=sourceNote>방성인 선택팀은 잉글랜드로 반영했습니다. +는 파란색, -는 붉은색으로 표시됩니다.</div></div>`;
-  const scheduleHtml=`<div class="card posterCard"><img class="schedulePoster" src="${schedulePosterData}" alt="2026 FIFA World Cup 전체 일정 요약 이미지"></div><div class=card style="margin-top:14px"><h3>V7 경기 결과 요약</h3><div class=tiny>6/18~6/21 확정 결과 반영: 멕시코 1-0 대한민국, 브라질 3-0 아이티, 미국 2-0 호주, 독일 2-1 코트디부아르, 네덜란드 5-1 스웨덴, 스페인 4-0 사우디, 우루과이 2-2 카보베르데, 벨기에 0-0 이란 등.</div><div class=sourceNote>6/22 일부 경기는 진행/예정 상태라 확정 스코어만 반영했습니다.</div></div><div class=card style="margin-top:14px"><h3>텍스트 일정 요약</h3><div class="stageRow timeline">${timeline}</div><div class=sourceNote>조별리그부터 결승까지 전체 흐름 요약입니다. 실제 경기 시간은 개최지 현지 시간과 한국 시간이 다를 수 있습니다.</div></div>`;
-  const oddsHtml=`<div class="versionBox"><b>V6 수정본</b><br>방성인 선택팀을 잉글랜드로 확정 반영하고, 김민지·김현서·김경화는 참가자 현황/생존자 현황에서 생존으로 표시되도록 보정했습니다. <span class=deltaPlus>+는 파란색</span>, <span class=deltaMinus>-는 붉은색</span>입니다.</div><div class="card oddsWrap"><h3>선택팀 우승확률 요약</h3><table class=oddsTable><tr><th>선택팀 / 선택자</th><th>대표 배당</th><th>현재 확률</th><th>조정</th><th>메모</th></tr>${oddsRows}</table><div class=sourceNote>확률은 공개 배당·기사 기반 단순 환산/운영용 추정치입니다. 실제 배당사는 시점별로 다를 수 있습니다.</div></div><div class=card style="margin-top:14px"><h3>주요 기사 / 확인 링크</h3><ul class=linklist>${links}</ul></div>`;
+  const dashboardOddsCard=`<div class="card oddsWrap" style="margin-top:14px"><h3>생존 선택팀 우승확률 요약</h3><table class=oddsTable><tr><th>선택팀 / 선택자</th><th>분류</th><th>현재 확률</th><th>조정</th><th>메모</th></tr>${oddsRows}</table><div class=sourceNote>탈락팀은 우승확률 표에서 제외했습니다. +는 파란색, -는 붉은색입니다.</div></div>`;
+  const scheduleHtml=`<div class="versionBox"><b>V8 업데이트</b><br>32강 확정 대진을 메인에 추가하고, 참가자 선택팀은 노란 테두리와 이름으로 표시했고, 32강 표의 숫자는 경기 승리확률로 표시했습니다. 탈락 선택팀: <span class=out>${eliminatedPickers}</span></div><div class="card posterCard"><img class="schedulePoster" src="${schedulePosterData}" alt="2026 FIFA World Cup 전체 일정 요약 이미지"></div><div class="card" style="margin-top:14px"><h3>현재 결정된 32강 대진표</h3>${renderOfficialR32Grid(true)}<div class=sourceNote>캐나다는 남아공에 1-0 승리해 16강에 선착했습니다. 나머지는 예정 경기 기준입니다.</div></div>${dashboardOddsCard}<div class=card style="margin-top:14px"><h3>텍스트 일정 요약</h3><div class=timeline>${timeline}</div></div><div class="card linklist" style="margin-top:14px"><h3>주요 기사 / 확인 링크</h3><ul>${links}</ul></div>`;
+  const oddsHtml=`<div class="versionBox"><b>V8 우승확률</b><br>32강 탈락/미진출 선택팀은 제외하고 생존 선택팀만 표시합니다. <span class=deltaPlus>+는 파란색</span>, <span class=deltaMinus>-는 붉은색</span>입니다.</div><div class="card oddsWrap"><h3>선택팀 우승확률 요약</h3><table class=oddsTable><tr><th>선택팀 / 선택자</th><th>분류</th><th>현재 확률</th><th>조정</th><th>메모</th></tr>${oddsRows}</table><div class=sourceNote>확률은 공개 배당·경기 결과 기반 운영용 추정치입니다.</div></div>`;
   const dash=document.getElementById('dashboardOnePage'); if(dash) dash.innerHTML=scheduleHtml;
   const odds=document.getElementById('oddsOnePage'); if(odds) odds.innerHTML=oddsHtml;
 }
-function loadScores(){const s=localStorage.getItem('wcScores'); if(s){JSON.parse(s).forEach((x,i)=>{if(schedule[i]){schedule[i].hg=x.hg;schedule[i].ag=x.ag}})}}
-function saveScores(){localStorage.setItem('wcScores',JSON.stringify(schedule.map(m=>({hg:m.hg,ag:m.ag})))); alert('저장 완료')}
-function resetScores(){if(confirm('입력한 스코어를 모두 초기화할까요?')){schedule.forEach(m=>{m.hg=null;m.ag=null});localStorage.removeItem('wcScores');renderAll()}}
+function loadScores(){const s=localStorage.getItem('wcScores_v8'); if(s){JSON.parse(s).forEach((x,i)=>{if(schedule[i]){schedule[i].hg=x.hg;schedule[i].ag=x.ag}})}}
+function saveScores(){localStorage.setItem('wcScores_v8',JSON.stringify(schedule.map(m=>({hg:m.hg,ag:m.ag})))); alert('저장 완료')}
+function resetScores(){if(confirm('입력한 스코어를 모두 초기화할까요?')){schedule.forEach(m=>{m.hg=null;m.ag=null});localStorage.removeItem('wcScores_v8');renderAll()}}
 function standings(){let table={};Object.entries(groups).forEach(([g,teams])=>{table[g]=teams.map(t=>({group:g,team:t,mp:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0,rank:0,qualified:false}))});const find=t=>table[groupOf(t)].find(x=>x.team===t);schedule.forEach(m=>{if(m.hg==null||m.ag==null||m.hg===''||m.ag==='')return;let a=find(m.home),b=find(m.away),hg=+m.hg,ag=+m.ag;a.mp++;b.mp++;a.gf+=hg;a.ga+=ag;b.gf+=ag;b.ga+=hg;if(hg>ag){a.w++;b.l++;a.pts+=3}else if(hg<ag){b.w++;a.l++;b.pts+=3}else{a.d++;b.d++;a.pts++;b.pts++}});Object.values(table).forEach(arr=>arr.sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf||a.team.localeCompare(b.team)).forEach((x,i)=>{x.rank=i+1;x.gd=x.gf-x.ga}));let thirds=Object.values(table).map(a=>a[2]).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);Object.values(table).flat().forEach(x=>x.qualified=x.rank<=2 || thirds.slice(0,8).includes(x) || confirmedQualifiedTeams.includes(x.team));return table}
 function isGroupComplete(g){return schedule.filter(m=>m.group===g).every(m=>m.hg!=null&&m.ag!=null&&m.hg!==''&&m.ag!=='')}
-function isAliveRow(r){return r.qualified || !isGroupComplete(r.group)}
+function isAliveRow(r){return isAliveTeam(r.team)}
 function participantRankScore(p,row){let odd=pctSortValue(winnerOdds[p.team]);return odd*100 + (row?row.pts*10+row.gd:0)}
 function renderGroups(){document.getElementById('groupCards').innerHTML=Object.entries(groups).map(([g,teams])=>`<div class=card><h3>GROUP ${g}</h3>${teams.map(t=>`<div class="team ${pickers(t).length?'pick':''}"><span><b>${K(t)}</b><div class=korea>${t}</div></span>${pickers(t).length?`<span class=names>${pickers(t).join(', ')}</span>`:''}</div>`).join('')}</div>`).join('')}
-function renderParticipants(){const st=standings();let rows=participants.map(p=>{let row=st[groupOf(p.team)].find(x=>x.team===p.team);return {p,row,score:participantRankScore(p,row)}}).sort((a,b)=>b.score-a.score||a.p.name.localeCompare(b.p.name));document.getElementById('summary').innerHTML=`<div class=metric><span>참가자</span><strong>${participants.length}</strong></div><div class=metric><span>선택 국가</span><strong>${new Set(participants.map(p=>p.team)).size}</strong></div><div class=metric><span>생존</span><strong class=alive>${rows.filter(x=>isAliveRow(x.row)).length}</strong></div><div class=metric><span>탈락</span><strong class=out>${rows.filter(x=>!isAliveRow(x.row)).length}</strong></div>`;document.getElementById('participantTable').innerHTML='<tr><th>참가자 순위</th><th>참가자</th><th>선택팀</th><th>조</th><th>조 순위</th><th>승점</th><th>현재 상태</th></tr>'+rows.map((x,i)=>{let p=x.p,row=x.row;let alive=isAliveRow(row);let cls=alive?'alive':'out';let txt=alive?'생존':'탈락';return `<tr><td class=rankBadge>${i+1}</td><td>${p.name}</td><td>${K(p.team)}</td><td>${groupOf(p.team)}</td><td>${row.rank||'-'}위</td><td>${row.pts}</td><td class="status ${cls}">${txt}</td></tr>`}).join('')}
+function renderParticipants(){
+  const st=standings();
+  let rows=participants.map(p=>{let row=st[groupOf(p.team)]?.find(x=>x.team===p.team)||{pts:0,gd:0,rank:'-',group:groupOf(p.team),team:p.team};return {p,row,score:participantRankScore(p,row)}}).sort((a,b)=>isAliveTeam(b.p.team)-isAliveTeam(a.p.team)||b.score-a.score||a.p.name.localeCompare(b.p.name));
+  document.getElementById('summary').innerHTML=`<div class=metric><span>참가자</span><strong>${participants.length}</strong></div><div class=metric><span>선택 국가</span><strong>${new Set(participants.map(p=>p.team)).size}</strong></div><div class=metric><span>생존</span><strong class=alive>${rows.filter(x=>isAliveTeam(x.p.team)).length}</strong></div><div class=metric><span>탈락</span><strong class=out>${rows.filter(x=>!isAliveTeam(x.p.team)).length}</strong></div>`;
+  document.getElementById('participantTable').innerHTML='<tr><th>참가자 순위</th><th>참가자</th><th>선택팀</th><th>32강 상대</th><th>우승확률</th><th>현재 상태</th></tr>'+rows.map((x,i)=>{let p=x.p;let alive=isAliveTeam(p.team);let cls=alive?'alive':'out';let txt=alive?'생존':'탈락';let opp=opponentInKnockout(p.team);let odds=winnerOdds[p.team]?.prob||'-';return `<tr><td class=rankBadge>${i+1}</td><td>${p.name}</td><td>${K(p.team)}</td><td>${opp?K(opp):'-'}</td><td>${alive?odds:'탈락 제외'}</td><td class="status ${cls}">${txt}</td></tr>`}).join('')
+}
 function renderSchedule(){const ps=document.getElementById('personSelect'),ts=document.getElementById('teamSelect');ps.innerHTML=participants.map((p,i)=>`<option value="${i}">${p.name} - ${K(p.team)}</option>`).join('');ts.innerHTML=[...new Set(participants.map(p=>p.team))].map(t=>`<option value="${t}">${K(t)}</option>`).join('');ps.onchange=()=>{ts.value=participants[ps.value].team;showSchedule(ts.value)};ts.onchange=()=>showSchedule(ts.value);showSchedule(participants[0].team)}
 function showSchedule(team){document.getElementById('scheduleBox').innerHTML=schedule.filter(m=>m.home===team||m.away===team).map(m=>`<div class=card><h3>${m.date} · Group ${m.group}</h3><div class=team><b>${K(m.home)} vs ${K(m.away)}</b></div><div class=tiny>${m.venue}</div><div class=tiny>선택자: ${pickers(team).join(', ')||'-'}</div></div>`).join('')}
 function renderResults(){const st=standings();document.getElementById('resultArea').innerHTML=Object.entries(groups).map(([g,teams])=>`<div class=card style="margin-bottom:14px"><h3>GROUP ${g} 결과 입력</h3><table><tr><th>일정</th><th>경기</th><th>스코어</th><th>장소</th></tr>${schedule.filter(m=>m.group===g).map(m=>`<tr><td>${m.date}</td><td>${K(m.home)} vs ${K(m.away)}</td><td><input type=number min=0 value="${m.hg??''}" style="width:58px" onchange="schedule[${m.no-1}].hg=this.value===''?null:+this.value;renderAll(false)"> : <input type=number min=0 value="${m.ag??''}" style="width:58px" onchange="schedule[${m.no-1}].ag=this.value===''?null:+this.value;renderAll(false)"></td><td class=tiny>${m.venue}</td></tr>`).join('')}</table><h3 style="margin-top:16px">자동 순위</h3><table><tr><th>순위</th><th>팀</th><th>경기</th><th>승점</th><th>득실</th><th>득점</th><th>진출</th></tr>${st[g].map(r=>`<tr><td class="${r.rank<=2?'rank1':r.qualified?'rank3':'rank4'}">${r.rank}</td><td>${K(r.team)} ${pickers(r.team).length?`<span class=names>${pickers(r.team).join(', ')}</span>`:''}</td><td>${r.mp}</td><td>${r.pts}</td><td>${r.gd}</td><td>${r.gf}</td><td>${r.qualified?'32강':'-'}</td></tr>`).join('')}</table></div>`).join('')}
-function renderSurvivors(){const st=standings(), rows=participants.map(p=>{let r=st[groupOf(p.team)].find(x=>x.team===p.team);return {...p,...r,score:participantRankScore(p,r)}}).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));let alive=rows.filter(r=>isAliveRow(r)).length;document.getElementById('survivorSummary').innerHTML=`<div class=metric><span>생존</span><strong class=alive>${alive}</strong></div><div class=metric><span>탈락</span><strong class=out>${rows.length-alive}</strong></div><div class=metric><span>현재 32강권</span><strong>${Object.values(st).flat().filter(x=>x.qualified).length}</strong></div>`;document.getElementById('survivorTable').innerHTML='<tr><th>참가자 순위</th><th>상태</th><th>참가자</th><th>선택팀</th><th>조 순위</th><th>승점</th><th>우승확률</th></tr>'+rows.map((r,i)=>{let alive=isAliveRow(r);return `<tr><td class=rankBadge>${i+1}</td><td class="status ${alive?'alive':'out'}">${alive?'생존':'탈락'}</td><td>${r.name}</td><td>${K(r.team)}</td><td>${r.group}-${r.rank||'-'}위</td><td>${r.pts}</td><td>${(winnerOdds[r.team]||{}).prob||'-'}</td></tr>`}).join('')}
-function renderBracket(){const st=standings();const q=Object.values(st).flat().filter(x=>x.qualified).sort((a,b)=>a.group.localeCompare(b.group)||a.rank-b.rank);const rounds=[['32강',q.map(x=>x.team)],['16강',Array(16).fill('승자')],['8강',Array(8).fill('승자')],['4강',Array(4).fill('승자')],['결승/우승',Array(2).fill('승자')]];document.getElementById('bracket').innerHTML=rounds.map(([name,arr],ri)=>`<div class=round><h3>${name}</h3>${arr.map((t,i)=>`<div class="slot ${ri===0&&pickers(t).length?'winner':''}"><b>${ri===0?K(t):t+' '+(i+1)}</b>${ri===0&&pickers(t).length?`<div class=who>${pickers(t).join(', ')}</div>`:''}</div>`).join('')}</div>`).join('')}
+function renderSurvivors(){
+  const st=standings(), rows=participants.map(p=>{let r=st[groupOf(p.team)]?.find(x=>x.team===p.team)||{group:groupOf(p.team),rank:'-',pts:0,gd:0,team:p.team};return {...p,...r,score:participantRankScore(p,r)}}).sort((a,b)=>isAliveTeam(b.team)-isAliveTeam(a.team)||b.score-a.score||a.name.localeCompare(b.name));
+  let alive=rows.filter(r=>isAliveTeam(r.team)).length;
+  document.getElementById('survivorSummary').innerHTML=`<div class=metric><span>생존</span><strong class=alive>${alive}</strong></div><div class=metric><span>탈락</span><strong class=out>${rows.length-alive}</strong></div><div class=metric><span>32강 진출 선택팀</span><strong>${[...new Set(participants.filter(p=>isAliveTeam(p.team)).map(p=>p.team))].length}</strong></div>`;
+  document.getElementById('survivorTable').innerHTML='<tr><th>참가자 순위</th><th>상태</th><th>참가자</th><th>선택팀</th><th>32강 상대</th><th>우승확률</th></tr>'+rows.map((r,i)=>{let alive=isAliveTeam(r.team);let opp=opponentInKnockout(r.team);return `<tr><td class=rankBadge>${i+1}</td><td class="status ${alive?'alive':'out'}">${alive?'생존':'탈락'}</td><td>${r.name}</td><td>${K(r.team)}</td><td>${opp?K(opp):'-'}</td><td>${alive?((winnerOdds[r.team]||{}).prob||'-'):'탈락 제외'}</td></tr>`}).join('')
+}
+function renderBracket(){
+  const rounds=[['32강',officialRound32Teams],['16강',Array(16).fill('승자')],['8강',Array(8).fill('승자')],['4강',Array(4).fill('승자')],['결승/우승',Array(2).fill('승자')]];
+  document.getElementById('bracket').innerHTML=rounds.map(([name,arr],ri)=>`<div class=round><h3>${name}</h3>${arr.map((t,i)=>`<div class="slot ${ri===0&&pickers(t).length?'winner':''}"><b>${ri===0?K(t):t+' '+(i+1)}</b>${ri===0&&pickers(t).length?`<div class=who>${pickers(t).join(', ')}</div>`:''}</div>`).join('')}</div>`).join('')
+}
+
 
 function teamStrength(team){
   const o=winnerOdds[team];
@@ -179,15 +233,10 @@ function sideHtml(team,meta=''){
 }
 function renderProjected32(){
   const box=document.getElementById('projected32Box'); if(!box) return;
-  const pg=projectedGroupRows();
-  const bestThird=Object.values(pg).map(a=>a[2]).sort((a,b)=>b.projectedScore-a.projectedScore||b.pts-a.pts||b.gd-a.gd||b.gf-a.gf).slice(0,8);
-  const q=[...Object.values(pg).map(a=>a[0]),...Object.values(pg).map(a=>a[1]),...bestThird];
-  const seeded=q.sort((a,b)=>b.projectedScore-a.projectedScore||b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
-  const pairs=[];
-  for(let i=0;i<16;i++) pairs.push([seeded[i],seeded[31-i]]);
-  const pickedCount=q.filter(x=>pickers(x.team).length).length;
-  const topPicked=participants.map(p=>({p,row:Object.values(pg).flat().find(r=>r.team===p.team)})).sort((a,b)=>(b.row?.projectedScore||0)-(a.row?.projectedScore||0)).slice(0,5);
-  box.innerHTML=`<div class=summary><div class=metric><span>예상 32강 진출팀</span><strong>${q.length}</strong></div><div class=metric><span>선택팀 포함</span><strong class=alive>${pickedCount}</strong></div><div class=metric><span>예상 TOP 선택팀</span><strong>${K(topPicked[0]?.p.team||'-')}</strong></div></div><div class="card"><h3>예상 대진표</h3><div class=projGrid>${pairs.map((p,i)=>`<div class=matchCard><h3>32강 ${i+1}경기</h3>${sideHtml(p[0].team,`예상 ${p[0].group}조 ${p[0].projectedRank}위`)}<div class=tiny style="text-align:center">vs</div>${sideHtml(p[1].team,`예상 ${p[1].group}조 ${p[1].projectedRank}위`)}</div>`).join('')}</div><div class=sourceNote>공식 대진표 확정 전까지는 현재 승점·득실·우승확률을 섞은 운영용 예상입니다. 3위팀 배치 방식은 FIFA 확정표와 달라질 수 있습니다.</div></div>`;
+  const selectedTeams=[...new Set(participants.map(p=>p.team))];
+  const eliminatedSelected=selectedTeams.filter(t=>!isAliveTeam(t));
+  const pickedCount=selectedTeams.filter(t=>isAliveTeam(t)).length;
+  box.innerHTML=`<div class=summary><div class=metric><span>32강 확정팀</span><strong>${officialRound32Teams.length}</strong></div><div class=metric><span>생존 선택팀</span><strong class=alive>${pickedCount}</strong></div><div class=metric><span>탈락 선택팀</span><strong class=out>${eliminatedSelected.length}</strong></div></div><div class="card"><h3>32강 대진표(확정)</h3>${renderOfficialR32Grid()}<div class=sourceNote>노란 테두리는 AFC 게임 참가자 선택팀이며, 우측 숫자는 우승확률이 아니라 해당 32강 경기 승리확률입니다.</div></div><div class="card" style="margin-top:14px"><h3>32강 탈락/미진출 선택팀</h3>${eliminatedSelected.length?eliminatedSelected.map(t=>`<div class="team"><b class=out>${K(t)}</b><span class=names>${pickers(t).join(', ')}</span></div>`).join(''):'<div class=tiny>현재 선택팀 중 32강 탈락팀 없음</div>'}</div>`;
 }
 function matchWinProb(team,opp){
   const a=teamStrength(team), b=teamStrength(opp); const draw=18;
@@ -196,33 +245,36 @@ function matchWinProb(team,opp){
 }
 function issueForTeam(team){
   const issues={
-    'South Korea':['멕시코전 패배 후 남아공전 반등 필요','득실차 관리가 3위 경쟁의 핵심'],
-    'Spain':['사우디전 대승 후 우승확률 반등','우루과이전이 조 1위 결정전'],
-    'France':['초반 승리로 안정권','노르웨이전 전까지 승점 확보가 중요'],
-    'England':['크로아티아전 다득점 승리로 상승세','가나전 승리 시 조 1위 유력'],
-    'Argentina':['알제리전 완승으로 우승확률 상승','오스트리아전이 조 1위 분수령'],
-    'Portugal':['DR콩고전 무승부로 조심스러운 출발','우즈베키스탄전 승점 3점 필요'],
-    'Brazil':['아이티전 완승으로 회복','스코틀랜드전 승리 시 32강 안정권'],
-    'Germany':['2연승권 흐름으로 강세','에콰도르전에서 조 1위 확정 가능'],
-    'Netherlands':['스웨덴전 대승으로 상승','튀니지전 로테이션 여부 변수']
+    'Spain':['오스트리아전은 전력상 우세','초반 득점 시 16강 진출 가능성 크게 상승'],
+    'France':['스웨덴전 우세 예상','측면 역습 차단과 세트피스 관리가 변수'],
+    'England':['DR콩고전 우세 예상','전방 결정력 유지 시 16강 가능성 높음'],
+    'Argentina':['카보베르데전 강한 우세','로테이션 폭이 관전 포인트'],
+    'Portugal':['크로아티아전은 난도 있는 대진','중원 압박 대응이 핵심'],
+    'Brazil':['일본전 우세이나 전환 속도 경계','선제골 여부가 경기 흐름 좌우'],
+    'Germany':['파라과이전 우세 예상','수비 집중력 유지가 변수'],
+    'Netherlands':['모로코전 경계 필요','역습 대응과 세트피스 수비 중요'],
+    'South Korea':['32강 미진출로 생존게임 탈락','우승확률 표 제외']
   };
-  return issues[team]||['잔여 경기 승점 확보가 핵심','득실차와 3위권 경쟁 변동성 주의'];
+  return issues[team]||['토너먼트 단판 승부 변수 존재','전반 실점 여부가 핵심'];
 }
 function renderRemainingOutlook(){
   const box=document.getElementById('remainingOutlookBox'); if(!box) return;
-  const selected=[...new Set(participants.map(p=>p.team))].sort((a,b)=>pctSortValue(winnerOdds[b])-pctSortValue(winnerOdds[a]));
+  const selected=[...new Set(participants.map(p=>p.team))].sort((a,b)=>isAliveTeam(b)-isAliveTeam(a)||pctSortValue(winnerOdds[b])-pctSortValue(winnerOdds[a]));
   const cards=selected.map(team=>{
-    const games=schedule.filter(m=>(m.home===team||m.away===team) && (m.hg==null||m.ag==null||m.hg===''||m.ag===''));
-    const st=standings(); const row=st[groupOf(team)].find(x=>x.team===team);
+    const alive=isAliveTeam(team); const match=knockoutMatchFor(team); const opp=opponentInKnockout(team);
     const issues=issueForTeam(team).map(x=>`<span class=issueTag>${x}</span>`).join('');
-    const gameRows=games.length?games.map(m=>{const opp=m.home===team?m.away:m.home; const pr=matchWinProb(team,opp); const cls=pr.win>=58?'safe':pr.win>=45?'watch':'danger'; return `<div class=matchCard><h3>${m.date} · ${K(team)} vs ${K(opp)}</h3><div class=analysisText><b class=${cls}>승리 ${pr.win}%</b> · 무승부 ${pr.draw}% · 패배 ${pr.lose}%</div><div class=probBar><div class=probFill style="width:${Math.min(100,pr.win)}%"></div></div><div class=tiny>${m.venue}</div></div>`}).join(''):`<div class=matchCard><b>조별리그 잔여 경기 없음</b><div class=tiny>현재 결과 기준으로 생존/진출 가능성을 확인하세요.</div></div>`;
+    let gameRows='';
+    if(alive && match){const pr=r32WinProb(team); const cls=pr.win>=60?'safe':pr.win>=45?'watch':'danger'; gameRows=`<div class=matchCard><h3>${match.date} · ${K(team)} vs ${K(opp)}</h3><div class=analysisText><b class=${cls}>승리 예상 ${pr.win}%</b> · 패배 ${pr.lose}%</div><div class=probBar><div class=probFill style="width:${Math.min(100,pr.win)}%"></div></div><div class=tiny>32강 결과 예상 · 승부차기 가능성 포함 단순 추정</div></div>`}
+    else {gameRows=`<div class=matchCard><b class=out>탈락</b><div class=tiny>32강 대진표에 포함되지 않아 생존게임에서 탈락 처리됩니다.</div></div>`}
     const link=(newsLinks[0]||{}).url||'#';
-    return `<div class=card><h3>${K(team)} <span class=pill>${pickers(team).join(', ')}</span></h3><div class=tiny>현재 ${groupOf(team)}조 ${row.rank}위 · 승점 ${row.pts} · 득실 ${row.gd} · 우승확률 ${(winnerOdds[team]||{}).prob||'-'}</div><div style="margin:8px 0">${issues}</div>${gameRows}<div class=sourceNote>확인 링크: <a href="${link}" target="_blank" rel="noopener" style="color:#9ed0ff">월드컵 일정/배당 기사 확인</a></div></div>`;
+    return `<div class=card><h3>${K(team)} <span class=pill>${pickers(team).join(', ')}</span></h3><div class=tiny>${alive?'32강 상대: '+K(opp)+' · 우승확률 '+((winnerOdds[team]||{}).prob||'-'):'탈락팀 · 우승확률 제외'}</div><div style="margin:8px 0">${issues}</div>${gameRows}<div class=sourceNote>확인 링크: <a href="${link}" target="_blank" rel="noopener" style="color:#9ed0ff">FIFA 일정/결과</a></div></div>`;
   }).join('');
-  box.innerHTML=`<div class=summary><div class=metric><span>분석 대상 선택팀</span><strong>${selected.length}</strong></div><div class=metric><span>잔여 경기 총합</span><strong>${selected.reduce((n,t)=>n+schedule.filter(m=>(m.home===t||m.away===t)&&(m.hg==null||m.ag==null||m.hg===''||m.ag==='')).length,0)}</strong></div><div class=metric><span>주의</span><strong class=watch>예상치</strong></div></div><div class=grid>${cards}</div>`;
+  const aliveCount=selected.filter(isAliveTeam).length;
+  box.innerHTML=`<div class=summary><div class=metric><span>32강 결과 예상 대상</span><strong>${selected.length}</strong></div><div class=metric><span>32강 진출 선택팀</span><strong class=alive>${aliveCount}</strong></div><div class=metric><span>탈락 선택팀</span><strong class=out>${selected.length-aliveCount}</strong></div></div><div class=grid>${cards}</div>`;
 }
 
-function renderTabs(){const names=[['dashboard','월드컵 스케줄'],['projected32','예상 32강 대진표'],['remainingOutlook','팀별 잔여 경기 예상'],['odds','우승확률'],['groups','조편성 현황'],['participants','참가자 현황'],['schedule','일정조회'],['results','조별리그 결과'],['survivors','생존자 현황'],['round32','본선(32강)']];document.getElementById('tabs').innerHTML=names.map((n,i)=>`<button class="${i==0?'active':''}" onclick="openTab('${n[0]}',this)">${n[1]}</button>`).join('')}
+
+function renderTabs(){const names=[['dashboard','월드컵 스케줄'],['projected32','32강 대진표(확정)'],['remainingOutlook','32강 결과 예상'],['odds','우승확률'],['groups','조편성 현황'],['participants','참가자 생존현황'],['schedule','일정조회'],['results','조별리그 결과'],['survivors','생존자 현황'],['round32','본선(32강)']];document.getElementById('tabs').innerHTML=names.map((n,i)=>`<button class="${i==0?'active':''}" onclick="openTab('${n[0]}',this)">${n[1]}</button>`).join('')}
 function openTab(id,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
 function renderAll(rebuildResults=true){renderOverview();renderGroups();renderParticipants();if(!document.getElementById('personSelect').innerHTML)renderSchedule();if(rebuildResults)renderResults();renderSurvivors();renderBracket();renderProjected32();renderRemainingOutlook()}
 loadScores();renderTabs();renderAll();
